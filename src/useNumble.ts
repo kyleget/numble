@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useCallback, useState } from "react";
 
 import {
   GameStatus,
@@ -21,7 +21,7 @@ const useNumble = (): UseNumbleProps => {
   const [guesses, setGuesses] = useState<[number, SquareStatus][][]>([]);
   const [currentGuess, setCurrentGuess] = useState<number[]>([]);
 
-  const performGuess = () => {
+  const performGuess = useCallback(() => {
     const guess: [number, SquareStatus][] = currentGuess.map((num, idx) => {
       let status: SquareStatus;
       if (num === answer[idx]) {
@@ -36,9 +36,11 @@ const useNumble = (): UseNumbleProps => {
 
     setGuesses((prev) => [...prev, guess]);
     setCurrentGuess([]);
-  };
+  }, [answer, currentGuess]);
 
-  const handleKeyPress = (value: number | "Enter" | "Backspace") => {
+  const handleKeyPress = useCallback((value: number | "Enter" | "Backspace") => {
+    if (gameStatus !== GameStatus.InPlay) return;
+
     if (value === "Enter") {
       currentGuess.length === ANSWER_LENGTH && performGuess();
       return;
@@ -54,7 +56,7 @@ const useNumble = (): UseNumbleProps => {
 
     currentGuess.length < ANSWER_LENGTH &&
       setCurrentGuess((prev) => [...prev, value as number]);
-  };
+  }, [currentGuess, performGuess, gameStatus]);
 
   const handleReset = () => {
     setGuesses([]);
@@ -64,7 +66,10 @@ const useNumble = (): UseNumbleProps => {
 
   useEffect(() => {
     if (guesses.length > 0) {
-      if (guesses[guesses.length - 1].map((guess) => guess[0]).join("") === answer.join("")) {
+      if (
+        guesses[guesses.length - 1].map((guess) => guess[0]).join("") ===
+        answer.join("")
+      ) {
         setGameStatus(GameStatus.Win);
         return;
       }
@@ -77,20 +82,20 @@ const useNumble = (): UseNumbleProps => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if ('0123456789'.includes(event.key)) {
+      if ("0123456789".includes(event.key)) {
         handleKeyPress(Number(event.key));
         return;
       }
 
-      if (event.key === 'Enter' || event.key === 'Backspace') {
+      if (event.key === "Enter" || event.key === "Backspace") {
         handleKeyPress(event.key);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [handleKeyPress]);
 
