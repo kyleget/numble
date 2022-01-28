@@ -3,9 +3,9 @@ export const ANSWER_LENGTH = 5;
 export const NUM_OF_GUESSES = 5;
 
 export enum GameStatus {
-  Win,
-  Lose,
-  InPlay,
+  Win = "Win",
+  Lose = "Lose",
+  InPlay = "In Play",
 }
 
 export enum SquareStatus {

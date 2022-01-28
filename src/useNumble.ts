@@ -12,7 +12,7 @@ type UseNumbleProps = {
   gameStatus: GameStatus;
   guesses: [number, SquareStatus][][];
   handleKeyPress: (value: number | "Enter" | "Backspace") => void;
-  resetGame: () => void;
+  handleReset: () => void;
 };
 
 const useNumble = (): UseNumbleProps => {
@@ -56,14 +56,15 @@ const useNumble = (): UseNumbleProps => {
       setCurrentGuess((prev) => [...prev, value as number]);
   };
 
-  const resetGame = () => {
+  const handleReset = () => {
     setGuesses([]);
     setAnswer(generateAnswer());
+    setGameStatus(GameStatus.InPlay);
   };
 
   useEffect(() => {
     if (guesses.length > 0) {
-      if (guesses[guesses.length - 1].join("") === answer.join("")) {
+      if (guesses[guesses.length - 1].map((guess) => guess[0]).join("") === answer.join("")) {
         setGameStatus(GameStatus.Win);
         return;
       }
@@ -79,7 +80,7 @@ const useNumble = (): UseNumbleProps => {
     gameStatus,
     guesses,
     handleKeyPress,
-    resetGame,
+    handleReset,
   };
 };
 

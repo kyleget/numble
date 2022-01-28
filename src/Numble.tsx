@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Backspace } from "phosphor-react";
+import { Backspace, ArrowClockwise } from "phosphor-react";
 import styled from "styled-components";
 
 import {
@@ -235,8 +235,91 @@ const Keyboard = ({ guesses, handleKeyPress }: KeyboardProps) => {
   );
 };
 
+const ModalContainer = styled.div`
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  width: 100%;
+  max-width: 500px;
+  transform: translate(-50%, -50%);
+  background-color: ${colors.white};
+  border-radius: 10px;
+  box-shadow: 0 4px 23px 0 rgb(0 0 0 / 20%);
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 250px;
+
+    h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+
+    button {
+      border: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 20px;
+      font-size: 20px;
+      padding: 8px;
+      background-color: ${colors.lightGray};
+      border-radius: 4px;
+      margin-top: 20px;
+      cursor: pointer;
+      font-weight: bold;
+
+      &:active {
+        background-color: ${colors.gray};
+      }
+
+      svg {
+        margin-right: 8px;
+      }
+    }
+  }
+`;
+
+type ModalProps = {
+  gameStatus: GameStatus;
+  guessCount: number;
+  onReset: () => void;
+};
+
+const Modal = ({ gameStatus, guessCount, onReset }: ModalProps) => {
+  if (gameStatus === GameStatus.InPlay) {
+    return null;
+  }
+
+  return (
+    <ModalContainer>
+      <div className="content">
+        <h2 className={gameStatus.toLowerCase()}>You {gameStatus}!</h2>
+        {gameStatus === GameStatus.Win && (
+          <p>
+            You guessed the correct answer in <b>{guessCount}</b> tries.
+          </p>
+        )}
+        <button onClick={onReset}>
+          <ArrowClockwise weight="bold" />
+          Play Again
+        </button>
+      </div>
+    </ModalContainer>
+  );
+};
+
 const Numble = () => {
-  const { currentGuess, guesses, handleKeyPress } = useNumble();
+  const { currentGuess, gameStatus, guesses, handleKeyPress, handleReset } =
+    useNumble();
   return (
     <Container>
       <Header>
@@ -244,6 +327,7 @@ const Numble = () => {
       </Header>
       <Board guesses={guesses} currentGuess={currentGuess} />
       <Keyboard guesses={guesses} handleKeyPress={handleKeyPress} />
+      <Modal gameStatus={gameStatus} guessCount={guesses.length} onReset={handleReset} />
     </Container>
   );
 };
