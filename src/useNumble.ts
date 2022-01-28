@@ -75,6 +75,25 @@ const useNumble = (): UseNumbleProps => {
     }
   }, [guesses, answer]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ('0123456789'.includes(event.key)) {
+        handleKeyPress(Number(event.key));
+        return;
+      }
+
+      if (event.key === 'Enter' || event.key === 'Backspace') {
+        handleKeyPress(event.key);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyPress]);
+
   return {
     currentGuess,
     gameStatus,
