@@ -218,15 +218,15 @@ const Keyboard = ({ keyStatuses, handleKeyPress }: KeyboardProps) => {
           .map((_, idx) => renderKey(idx + 1))}
       </div>
       <div className="row">
-        <Key onClick={() => handleKeyPress("Backspace")}>
-          <Backspace weight="bold" size={24} />
+        <Key onClick={() => handleKeyPress("Enter")}>
+          <KeyReturn weight="bold" size={24} />
         </Key>
         {Array(3)
           .fill(null)
           .map((_, idx) => renderKey(idx + 7))}
         {renderKey(0)}
-        <Key onClick={() => handleKeyPress("Enter")}>
-          <KeyReturn weight="bold" size={24} />
+        <Key onClick={() => handleKeyPress("Backspace")}>
+          <Backspace weight="bold" size={24} />
         </Key>
       </div>
     </KeyboardContainer>
