@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Backspace, ArrowClockwise } from "phosphor-react";
+import { Backspace, ArrowClockwise, KeyReturn } from "phosphor-react";
 import styled from "styled-components";
 
 import {
@@ -17,6 +17,7 @@ const colors = {
   darkGray: "#787c7e",
   lightGray: "#d3d6da",
   gray: "#cbced1",
+  black: "#000",
 };
 
 const Container = styled.div`
@@ -25,8 +26,16 @@ const Container = styled.div`
   font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   max-width: 500px;
   margin: 0 auto;
-  height: 100vh;
-  justify-content: space-between;
+  height: 100%;
+
+  button {
+    background-color: ${colors.lightGray};
+    color: ${colors.black};
+
+    &:active {
+      background-color: ${colors.gray};
+    }
+  }
 
   .correct {
     background-color: ${colors.green};
@@ -83,6 +92,7 @@ const BoardContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  flex-grow: 1;
 
   .row {
     display: flex;
@@ -168,7 +178,6 @@ const KeyboardContainer = styled.div`
 `;
 
 const Key = styled.button`
-  background-color: ${colors.lightGray};
   border: 0;
   border-radius: 4px;
   display: flex;
@@ -181,10 +190,6 @@ const Key = styled.button`
   font-weight: bold;
   cursor: pointer;
   text-transform: uppercase;
-
-  &:active {
-    background-color: ${colors.gray};
-  }
 `;
 
 type KeyboardProps = {
@@ -213,13 +218,15 @@ const Keyboard = ({ keyStatuses, handleKeyPress }: KeyboardProps) => {
           .map((_, idx) => renderKey(idx + 1))}
       </div>
       <div className="row">
-        <Key onClick={() => handleKeyPress("Enter")}>Enter</Key>
+        <Key onClick={() => handleKeyPress("Backspace")}>
+          <Backspace weight="bold" size={24} />
+        </Key>
         {Array(3)
           .fill(null)
           .map((_, idx) => renderKey(idx + 7))}
         {renderKey(0)}
-        <Key onClick={() => handleKeyPress("Backspace")}>
-          <Backspace weight="bold" size={24} />
+        <Key onClick={() => handleKeyPress("Enter")}>
+          <KeyReturn weight="bold" size={24} />
         </Key>
       </div>
     </KeyboardContainer>
@@ -230,7 +237,7 @@ const ModalContainer = styled.div`
   position: fixed;
   top: 40%;
   left: 50%;
-  width: 100%;
+  width: 90%;
   max-width: 500px;
   transform: translate(-50%, -50%);
   background-color: ${colors.white};
@@ -262,15 +269,10 @@ const ModalContainer = styled.div`
       line-height: 20px;
       font-size: 20px;
       padding: 8px;
-      background-color: ${colors.lightGray};
       border-radius: 4px;
       margin-top: 20px;
       cursor: pointer;
       font-weight: bold;
-
-      &:active {
-        background-color: ${colors.gray};
-      }
 
       svg {
         margin-right: 8px;
@@ -309,8 +311,14 @@ const Modal = ({ gameStatus, guessCount, onReset }: ModalProps) => {
 };
 
 const Numble = () => {
-  const { currentGuess, gameStatus, guesses, handleKeyPress, handleReset, keyStatuses } =
-    useNumble();
+  const {
+    currentGuess,
+    gameStatus,
+    guesses,
+    handleKeyPress,
+    handleReset,
+    keyStatuses,
+  } = useNumble();
   return (
     <Container>
       <Header>
@@ -318,7 +326,11 @@ const Numble = () => {
       </Header>
       <Board guesses={guesses} currentGuess={currentGuess} />
       <Keyboard keyStatuses={keyStatuses} handleKeyPress={handleKeyPress} />
-      <Modal gameStatus={gameStatus} guessCount={guesses.length} onReset={handleReset} />
+      <Modal
+        gameStatus={gameStatus}
+        guessCount={guesses.length}
+        onReset={handleReset}
+      />
     </Container>
   );
 };
