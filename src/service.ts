@@ -19,7 +19,7 @@ export const generateAnswer = (
   answer: number[] = []
 ): number[] => {
   if (answer.length < ANSWER_LENGTH) {
-    const idx = Math.floor(Math.random() * answer.length);
+    const idx = Math.floor(Math.random() * (10 - answer.length));
     const newAnswer = [...answer, nums[idx]];
     nums.splice(idx, 1);
     return generateAnswer(nums, newAnswer);
