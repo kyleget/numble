@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useMemo } from "react";
 
 import {
   GameStatus,
@@ -13,6 +13,7 @@ type UseNumbleProps = {
   guesses: [number, SquareStatus][][];
   handleKeyPress: (value: number | "Enter" | "Backspace") => void;
   handleReset: () => void;
+  keyStatuses: Record<number, SquareStatus>;
 };
 
 const useNumble = (): UseNumbleProps => {
@@ -20,6 +21,26 @@ const useNumble = (): UseNumbleProps => {
   const [gameStatus, setGameStatus] = useState(GameStatus.InPlay);
   const [guesses, setGuesses] = useState<[number, SquareStatus][][]>([]);
   const [currentGuess, setCurrentGuess] = useState<number[]>([]);
+
+  const keyStatuses = useMemo(() => {
+    const statuses: Record<number, SquareStatus> = {};
+    guesses.forEach((guess) => {
+      guess.forEach((square) => {
+        const [num, status] = square;
+
+        if (status === SquareStatus.Correct) {
+          statuses[num] = SquareStatus.Correct;
+          return;
+        }
+
+        if (!statuses[num]) {
+          statuses[num] = status;
+        }
+      });
+    });
+
+    return statuses;
+  }, [guesses]);
 
   const performGuess = useCallback(() => {
     const guess: [number, SquareStatus][] = currentGuess.map((num, idx) => {
@@ -105,6 +126,7 @@ const useNumble = (): UseNumbleProps => {
     guesses,
     handleKeyPress,
     handleReset,
+    keyStatuses,
   };
 };
 

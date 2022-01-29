@@ -188,25 +188,16 @@ const Key = styled.button`
 `;
 
 type KeyboardProps = {
-  guesses: [number, SquareStatus][][];
+  keyStatuses: Record<number, SquareStatus>;
   handleKeyPress: (value: number | "Enter" | "Backspace") => void;
 };
 
-const Keyboard = ({ guesses, handleKeyPress }: KeyboardProps) => {
+const Keyboard = ({ keyStatuses, handleKeyPress }: KeyboardProps) => {
   const renderKey = (value: number) => {
-    const status = guesses.reduce((_, guess) => {
-      return guess.reduce((prev, square) => {
-        if (square[0] === value) {
-          return square[1];
-        }
-        return prev;
-      }, undefined as SquareStatus | undefined);
-    }, undefined as SquareStatus | undefined);
-
     return (
       <Key
         key={`key${value}`}
-        className={status}
+        className={keyStatuses[value]}
         onClick={() => handleKeyPress(value)}
       >
         {value}
@@ -318,7 +309,7 @@ const Modal = ({ gameStatus, guessCount, onReset }: ModalProps) => {
 };
 
 const Numble = () => {
-  const { currentGuess, gameStatus, guesses, handleKeyPress, handleReset } =
+  const { currentGuess, gameStatus, guesses, handleKeyPress, handleReset, keyStatuses } =
     useNumble();
   return (
     <Container>
@@ -326,7 +317,7 @@ const Numble = () => {
         <h1>Numble</h1>
       </Header>
       <Board guesses={guesses} currentGuess={currentGuess} />
-      <Keyboard guesses={guesses} handleKeyPress={handleKeyPress} />
+      <Keyboard keyStatuses={keyStatuses} handleKeyPress={handleKeyPress} />
       <Modal gameStatus={gameStatus} guessCount={guesses.length} onReset={handleReset} />
     </Container>
   );
